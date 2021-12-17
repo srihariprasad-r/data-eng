@@ -16,6 +16,9 @@ httpData = urlopen(urlJsonData).read().decode('utf-8')
 rdd = spark.sparkContext.parallelize([httpData])
 df = spark.read.json(rdd)
 # explode array and extract nested columns
-df.withColumn('expr_result', F.explode(df["results"])).select(F.col("expr_result.user.cell").alias('mobile phone'),
-                                                              F.col("expr_result.user.location.city").alias('city')) \
-    .show()
+derv_df = df.withColumn('expr_result', F.explode(df["results"])).select(F.col("expr_result.user.cell").alias('mobile phone'),
+                                                              F.col("expr_result.user.location.city").alias('city'),
+                                                              F.struct(F.col("expr_result.user.name.first"),
+                                                                       F.col("expr_result.user.name.last")).alias('full_name'))
+# create struct complex column and extract individual columns
+derv_df.select(F.col('full_name').getField('last')).show()
