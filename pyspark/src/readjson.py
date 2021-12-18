@@ -22,3 +22,7 @@ derv_df = df.withColumn('expr_result', F.explode(df["results"])).select(F.col("e
                                                                        F.col("expr_result.user.name.last")).alias('full_name'))
 # create struct complex column and extract individual columns
 derv_df.select(F.col('full_name').getField('last')).show()
+# add new column to dataframe using lit function
+derv_df.withColumn('spark-user', F.lit(True)).show()
+# not working, need to check below
+derv_df.where(F.flatten(F.tranform(F.col('full_name'),'x->x.first')).equalTo('jennings')).show()
