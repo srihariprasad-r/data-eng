@@ -25,7 +25,7 @@ derv_df.select(F.col('full_name').getField('last')).show()
 # add new column to dataframe using lit function
 derv_df.withColumn('spark-user', F.lit(True)).show()
 # not working, need to check below
-derv_df.where(F.flatten(F.tranform(F.col('full_name'),'x->x.first')).equalTo('jennings')).show()
+# derv_df.where(F.flatten(F.tranform(F.col('full_name'),'x->x.first')).equalTo('jennings')).show()
 
 # Row lesson
 myschema = StructType([
@@ -46,4 +46,6 @@ incdf.select(F.expr('col1 as column1')).show()
 incdf.selectExpr('*', "col1 != col2 as extended_column").show()
 # aggregate function cannot be combined with any other column
 incdf.selectExpr("avg(col3) as avg_col3", "count(col1) as column_cnt").show()
+
+incdf.groupBy('col1').agg(F.expr("sum(col3)")).show()
 
