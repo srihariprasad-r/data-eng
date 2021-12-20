@@ -1,5 +1,5 @@
-from pyspark.sql import SparkSession, functions as F
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql import SparkSession, functions as F, Row
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from urllib.request import urlopen
 
 spark = SparkSession.builder.appName("test").getOrCreate()
@@ -26,3 +26,24 @@ derv_df.select(F.col('full_name').getField('last')).show()
 derv_df.withColumn('spark-user', F.lit(True)).show()
 # not working, need to check below
 derv_df.where(F.flatten(F.tranform(F.col('full_name'),'x->x.first')).equalTo('jennings')).show()
+
+# Row lesson
+myschema = StructType([
+    StructField('col1', StringType(), True),
+    StructField('col2', StringType(), False),
+    StructField('col3', IntegerType(), False)
+])
+newRow = Row('Column','Value', 2)
+newdf = spark.createDataFrame([newRow], myschema)
+
+incrementRow = [Row('c1','v1', 3),
+                Row('c2', 'v1', 4)]  # having col3 as None raises error as schema has nullable as False
+incdf = spark.createDataFrame(incrementRow, myschema)
+incdf.show()
+# renaming the column using expr function
+incdf.select(F.expr('col1 as column1')).show()
+# simple expressions
+incdf.selectExpr('*', "col1 != col2 as extended_column").show()
+# aggregate function cannot be combined with any other column
+incdf.selectExpr("avg(col3) as avg_col3", "count(col1) as column_cnt").show()
+
