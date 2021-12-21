@@ -43,9 +43,11 @@ incdf.show()
 # renaming the column using expr function
 incdf.select(F.expr('col1 as column1')).show()
 # simple expressions
-incdf.selectExpr('*', "col1 != col2 as extended_column").show()
+incdf.selectExpr('*', "col1 != col2 as extended_column", "`col3`").show()
+# backticks are needed only for columns used as expression, and not needed if column is used with col function
+incdf.select(F.col('col2'), "`col3`").show()
+incdf.selectExpr("`col2`", "`col3`").show()
 # aggregate function cannot be combined with any other column
 incdf.selectExpr("avg(col3) as avg_col3", "count(col1) as column_cnt").show()
 
 incdf.groupBy('col1').agg(F.expr("sum(col3)")).show()
-
