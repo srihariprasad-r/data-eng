@@ -27,3 +27,7 @@ unitpriceLess650 = F.col('UnitPrice') < 650
 only_dot_stocks_df.where(unitpriceLess500 & unitpriceLess650) \
     .select('InvoiceNo', 'StockCode', 'UnitPrice') \
     .show()
+# same check using expr function
+only_dot_stocks_df.where(F.expr('UnitPrice > 500') & F.expr('UnitPrice < 650')) \
+    .select('InvoiceNo', 'StockCode', 'UnitPrice') \
+    .show()
